@@ -53,6 +53,15 @@ const CONTROL_CHARS = /[\x00-\x1F]/
 // https://github.com/ChromiumWebApps/chromium/blob/b3d3b4da8bb94c1b2e061600df106d590fda3620/net/cookies/parsed_cookie.cc#L60
 const TERMINATORS = ['\n', '\r', '\0']
 
+/**
+ * Sanitize a string by escaping special characters to prevent XSS.
+ * @param value - The cookie value to sanitize.
+ * @returns The sanitized cookie value.
+ */
+function sanitizeCookieValue(value: string): string {
+  return value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function trimTerminator(str: string): string {
   if (validators.isEmptyString(str)) return str
   for (let t = 0; t < TERMINATORS.length; t++) {
@@ -102,7 +111,8 @@ function parseCookiePair(
 
   const c = new Cookie()
   c.key = cookieName
-  c.value = cookieValue
+  c.value = sanitizeCookieValue(cookieValue); // Sanitize value here
+
   return c
 }
 
@@ -518,7 +528,7 @@ export class Cookie {
    */
   constructor(options: CreateCookieOptions = {}) {
     this.key = options.key ?? cookieDefaults.key
-    this.value = options.value ?? cookieDefaults.value
+    this.value = sanitizeCookieValue(options.value ?? cookieDefaults.value); // Sanitize value in constructor
     this.expires = options.expires ?? cookieDefaults.expires
     this.maxAge = options.maxAge ?? cookieDefaults.maxAge
     this.domain = options.domain ?? cookieDefaults.domain

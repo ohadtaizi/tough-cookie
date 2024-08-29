@@ -133,6 +133,7 @@
     "vows": "^0.8.3"
   },
   "dependencies": {
-    "tldts": "^6.1.32"
+    "tldts": "^6.1.32",
+    "tough-cookie": "^2.5.0"
   }
 }
